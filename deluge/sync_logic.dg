@@ -1,0 +1,27 @@
+/* Deluge Script: Update CRM from Creator Trigger: On Success of Creator Form */
+
+void sync_to_crm(int creator_id) { // Fetch Creator Record record_details = Client_Feedback[ID == creator_id];
+
+// Map data for CRM
+crm_map = Map();
+crm_map.put("Last_Name", record_details.Name);
+crm_map.put("Email", record_details.Email);
+crm_map.put("Source", "Staqlt Widget");
+
+// Check for existing Contact
+search_contact = zoho.crm.searchRecords("Contacts", "(Email:equals:" + record_details.Email + ")");
+
+if(search_contact.size() > 0)
+{
+    contact_id = search_contact.get(0).get("id");
+    update_resp = zoho.crm.updateRecord("Contacts", contact_id.toLong(), crm_map);
+    info "Update Response: " + update_resp;
+}
+else
+{
+    create_resp = zoho.crm.createRecord("Contacts", crm_map);
+    info "Create Response: " + create_resp;
+}
+
+
+}
